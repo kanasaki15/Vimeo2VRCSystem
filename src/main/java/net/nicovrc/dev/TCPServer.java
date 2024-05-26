@@ -70,6 +70,14 @@ public class TCPServer extends Thread{
                         String videoUrl = "";
                         String audioUrl = "";
 
+                        String BaseURL = json.getAsJsonObject().get("BaseURL").getAsString();
+                        //System.out.println(BaseURL);
+                        videoUrl = json.getAsJsonObject().get("VideoURL").getAsString().replaceAll("\\.\\./\\.\\./\\.\\./", BaseURL+"/video/");
+                        //System.out.println(videoUrl);
+                        String[] baseURL = BaseURL.split("/");
+                        audioUrl = json.getAsJsonObject().get("AudioURL").getAsString().replaceAll("\\.\\./\\.\\./\\.\\./\\.\\./", baseURL[0]+"//"+baseURL[2]+"/"+baseURL[3]+"/"+baseURL[4]+"/"+baseURL[5]+"/");
+                        //System.out.println(audioUrl);
+
                         String videoId = new Date().getTime() + "_" + UUID.randomUUID().toString().split("-")[0];
 
                         if (no_vrc){
