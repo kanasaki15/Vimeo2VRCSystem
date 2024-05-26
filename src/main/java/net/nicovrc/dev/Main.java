@@ -2,10 +2,13 @@ package net.nicovrc.dev;
 
 import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
+import com.amihaiemil.eoyaml.YamlMappingBuilder;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,6 +20,29 @@ public class Main {
     private static final Pattern matcher_ID = Pattern.compile("(\\d+)_(.+)");
 
     public static void main(String[] args) {
+
+        if (!new File("./config.yml").exists()){
+
+            YamlMappingBuilder add = Yaml.createYamlMappingBuilder()
+                    .add("RedisServer", "127.0.0.1")
+                    .add("RedisPort", 3128)
+                    .add("RedisPass", "");
+            YamlMapping build = add.build();
+
+            try {
+                new File("./config.yml").createNewFile();
+                PrintWriter writer = new PrintWriter("./config.yml");
+                writer.print(build.toString());
+                writer.close();
+
+                System.out.println("[Info] config.ymlを設定してください。");
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
         // キャッシュ定期お掃除
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
