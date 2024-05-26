@@ -17,6 +17,7 @@ public class Main {
     private static final Pattern matcher_ID = Pattern.compile("(\\d+)_(.+)");
 
     public static void main(String[] args) {
+        // キャッシュ定期お掃除
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -49,5 +50,8 @@ public class Main {
 
             }
         }, 0L, 3600000L);
+
+
+
     }
 }
