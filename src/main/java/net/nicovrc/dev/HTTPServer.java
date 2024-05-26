@@ -14,7 +14,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +22,7 @@ public class HTTPServer extends Thread {
     private final Pattern matcher_HTTP = Pattern.compile("(GET|HEAD) (.+) HTTP");
     private final Pattern matcher_HTTPVer = Pattern.compile("HTTP/(\\d)\\.(\\d)");
     private final Pattern matcher_VideoId = Pattern.compile("/(\\d+)_(.+)/");
+    private final Pattern matcher_NoVRCUA = Pattern.compile("[uU]ser-[aA]gent: (VLC|vlc)");
 
     @Override
     public void run() {
@@ -100,7 +100,14 @@ public class HTTPServer extends Thread {
                             if (request.endsWith("main.m3u8")){
                                 out.write(("HTTP/"+httpVersion+" 200 OK\nContent-Type: application/vnd.apple.mpegurl; charset=utf-8\n\n").getBytes(StandardCharsets.UTF_8));
                                 if (get.equals("GET")){
-                                    out.write(json.getAsJsonObject().get("main_m3u8").getAsString().getBytes(StandardCharsets.UTF_8));
+
+                                    Matcher matcher3 = matcher_NoVRCUA.matcher(text);
+                                    if (matcher3.find() && !json.getAsJsonObject().get("sub_m3u8").getAsString().isEmpty()){
+                                        out.write(json.getAsJsonObject().get("sub_m3u8").getAsString().getBytes(StandardCharsets.UTF_8));
+                                    } else {
+                                        out.write(json.getAsJsonObject().get("main_m3u8").getAsString().getBytes(StandardCharsets.UTF_8));
+                                    }
+
                                 }
                                 out.flush();
                                 out.close();
