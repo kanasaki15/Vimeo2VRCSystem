@@ -51,7 +51,11 @@ public class Main {
             }
         }, 0L, 3600000L);
 
+        // 処理受付
+        new UDPServer().start();
 
+        // HTTP
+        new HTTPServer().start();
 
     }
 }
