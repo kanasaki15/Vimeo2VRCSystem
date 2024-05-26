@@ -25,7 +25,7 @@ public class Main {
 
             YamlMappingBuilder add = Yaml.createYamlMappingBuilder()
                     .add("RedisServer", "127.0.0.1")
-                    .add("RedisPort", 3128)
+                    .add("RedisPort", 6379)
                     .add("RedisPass", "");
             YamlMapping build = add.build();
 
