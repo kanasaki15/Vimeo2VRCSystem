@@ -27,7 +27,7 @@ public class Main {
                     .add("RedisServer", "127.0.0.1")
                     .add("RedisPort", 6379)
                     .add("RedisPass", "")
-                    .add("BaseURL", "");
+                    .add("BaseURL", "http://localhost:22221/");
             YamlMapping build = add.build();
 
             try {
