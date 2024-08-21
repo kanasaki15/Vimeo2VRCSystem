@@ -71,12 +71,12 @@ public class TCPServer extends Thread{
                         String audioUrl = "";
 
                         String BaseURL = json.getAsJsonObject().get("BaseURL").getAsString();
-                        //System.out.println(BaseURL);
-                        videoUrl = json.getAsJsonObject().get("VideoURL").getAsString().replaceAll("\\.\\./\\.\\./\\.\\./", BaseURL+"/video/");
-                        //System.out.println(videoUrl);
-                        String[] baseURL = BaseURL.split("/");
-                        audioUrl = json.getAsJsonObject().get("AudioURL").getAsString().replaceAll("\\.\\./\\.\\./\\.\\./\\.\\./", baseURL[0]+"//"+baseURL[2]+"/"+baseURL[3]+"/"+baseURL[4]+"/"+baseURL[5]+"/");
-                        //System.out.println(audioUrl);
+                        //System.out.println("base : "+BaseURL);
+                        videoUrl = json.getAsJsonObject().get("VideoURL").getAsString().replaceAll("\\.\\./", BaseURL+"/playlist/av/");
+                        //System.out.println("video : "+videoUrl);
+                        //String[] baseURL = BaseURL.split("/");
+                        audioUrl = json.getAsJsonObject().get("AudioURL").getAsString().replaceAll("\\.\\./", BaseURL+"/playlist/av/");
+                        //System.out.println("audio : "+audioUrl);
 
                         String videoId = new Date().getTime() + "_" + UUID.randomUUID().toString().split("-")[0];
 

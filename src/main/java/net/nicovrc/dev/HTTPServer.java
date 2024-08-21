@@ -4,12 +4,17 @@ import com.amihaiemil.eoyaml.Yaml;
 import com.amihaiemil.eoyaml.YamlMapping;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -54,21 +59,54 @@ public class HTTPServer extends Thread {
 
                             return;
                         }
+
+                        //System.out.println(text);
+
                         final String httpVersion = matcher1.group(1) + "." + matcher1.group(2);
                         final String get = matcher.group(1);
                         final String request = matcher.group(2);
 
+                        //System.out.println(request);
                         final Matcher matcher2 = matcher_VideoId.matcher(request);
                         if (!matcher2.find()){
 
-                            out.write(("HTTP/"+httpVersion+" 404 Not Found\nContent-Type: text/plain; charset=utf-8\n\n").getBytes(StandardCharsets.UTF_8));
-                            if (get.equals("GET")){
-                                out.write("404".getBytes(StandardCharsets.UTF_8));
+                            if (request.equals("/")){
+                                out.write(("HTTP/"+httpVersion+" 404 Not Found\nContent-Type: text/plain; charset=utf-8\n\n404").getBytes(StandardCharsets.UTF_8));
+                                out.flush();
+                                out.close();
+                                in.close();
+                                sock.close();
+                                return;
                             }
-                            out.flush();
-                            out.close();
-                            in.close();
-                            sock.close();
+
+                            final OkHttpClient client = new OkHttpClient();
+                            Request request1 = new Request.Builder()
+                                    .url("https://vod-adaptive-ak.vimeocdn.com"+ request)
+                                    .build();
+
+                            //System.out.println("https://vod-adaptive-ak.vimeocdn.com"+ request);
+
+                            Response response = client.newCall(request1).execute();
+                            if (response.body() != null){
+                                System.out.println(response.code());
+                                if (response.code() == 200){
+                                    out.write(("HTTP/"+httpVersion+" 200 OK\nContent-Type: "+response.header("Content-Type")+"\n\n").getBytes(StandardCharsets.UTF_8));
+
+                                    if (get.equals("GET")){
+                                        out.write(response.body().bytes());
+                                    }
+                                    out.flush();
+
+                                } else {
+                                    out.write(("HTTP/"+httpVersion+" 404 Not Found\nContent-Type: text/plain; charset=utf-8\n\n404").getBytes(StandardCharsets.UTF_8));
+                                    out.flush();
+                                }
+
+                                out.close();
+                                in.close();
+                                sock.close();
+                            }
+                            response.close();
 
                             return;
                         }
